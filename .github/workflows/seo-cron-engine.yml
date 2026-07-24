@@ -1,0 +1,29 @@
+name: Continuous Programmatic SEO Content Factory
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs automatically every 24 hours at midnight
+  workflow_dispatch: # Forces the manual "Run workflow" button to appear in your browser
+
+jobs:
+  run-factory-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Execute Autonomous Page Generator
+        run: node scripts/seo-factory.js
+
+      - name: Commit and Push Compiled Search Assets
+        run: |
+          git config --global user.name "NMASK-AUTOMATION-BOT"
+          git config --global user.email "bot@nmask.global"
+          git add src/
+          git diff-index --quiet HEAD || git commit -m "auto(pSEO): compiled rising multi-domain search targets [skip ci]"
+          git push
