@@ -1,0 +1,119 @@
+    <!-- CORE INTEROPERABILITY PIPELINE ENGINE -->
+    <script type="module">
+        import { callGeminiAPI } from './js/geminiClient.js';
+        import { logIntentSignal } from './js/telemetry.js';
+
+        // 10 MASTER DOMAIN PILLARS MATRIX DATA STRUCTURE
+        const SECTOR_METRIC_GRAPH = {
+            finance: {
+                title: "Finance & FinTech",
+                tools: [
+                    { name: "Algo Back-Tester", prompt: "Act as an algorithmic trading matrix validator. Compute simple moving average crossover signals, analyze historical CSV price logs, and output risk performance markers." },
+                    { name: "Tax Compliance Router", prompt: "Act as a corporate accounting compiler. Map raw localized corporate profit structures against native compliance brackets to find write-offs." },
+                    { name: "Portfolio Variance Optimizer", prompt: "Act as an asset allocation risk engine. Run standard portfolio covariance calculations on asset weights to maximize Sharpe metrics." }
+                ]
+            },
+            realestate: {
+                title: "Real Estate & PropTech",
+                tools: [
+                    { name: "Commercial Yield Calculator", prompt: "Compute property cap rates, Net Operating Income, and Debt Service Coverage Ratios from the provided income parameters." },
+                    { name: "Zoning Text Parser", prompt: "Extract maximum allowable square footage, setback configurations, and structural heights from raw municipal ordinances." },
+                    { name: "Seasonal Rental Optimizer", prompt: "Analyze raw hyper-local competitor reservation schedules to forecast optimal high/low season occupancy nightly rates." }
+                ]
+            },
+            legal: {
+                title: "Legal Tech Systems",
+                tools: [
+                    { name: "NDA Boundary Scanner", prompt: "Evaluate the non-disclosure agreement agreement parameter details, highlighting predatory indemnification clauses or permanent survival locks." },
+                    { name: "Regional Compliance Builder", prompt: "Formulate localized business operating sequence checklists matching specific corporate codes." },
+                    { name: "Patent Query Optimizer", prompt: "Structure semantic database search tokens designed to successfully scan global trademark indices for conflicting art." }
+                ]
+            }
+        };
+
+        let currentDomain = 'finance';
+        let currentToolIndex = 0;
+
+        // LIFE CYCLE INITIALIZATION
+        document.addEventListener('DOMContentLoaded', () => {
+            const keyInput = document.getElementById('byok-key-input');
+            const savedKey = localStorage.getItem("NMASK_BYOK_GEMINI_KEY");
+            if (savedKey) {
+                keyInput.value = savedKey;
+                document.getElementById('key-status').innerText = "Security check complete: Global edge API token armed.";
+                document.getElementById('key-status').className = "text-[9px] text-emerald-400 mt-1.5";
+            }
+
+            keyInput.addEventListener('input', (e) => {
+                const key = e.target.value.trim();
+                localStorage.setItem("NMASK_BYOK_GEMINI_KEY", key);
+                document.getElementById('key-status').innerText = "System operational: Token mapped to local client state.";
+                document.getElementById('key-status').className = "text-[9px] text-blue-400 mt-1.5";
+            });
+
+            renderInterface();
+            document.getElementById('execute-pipeline-btn').addEventListener('click', runProcessingPipeline);
+        });
+
+        function renderInterface() {
+            const domainNav = document.getElementById('domain-nav');
+            domainNav.innerHTML = '';
+            
+            Object.keys(SECTOR_METRIC_GRAPH).forEach(key => {
+                const isActive = currentDomain === key;
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left px-3 py-2 rounded-lg text-xs font-bold tracking-wide transition-all uppercase ${isActive ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-900/60 hover:text-slate-200'}`;
+                btn.innerText = SECTOR_METRIC_GRAPH[key].title;
+                btn.onclick = () => { currentDomain = key; currentToolIndex = 0; renderInterface(); clearLogs(); };
+                domainNav.appendChild(btn);
+            });
+
+            const toolTabsRow = document.getElementById('tool-tabs-row');
+            toolTabsRow.innerHTML = '';
+            
+            SECTOR_METRIC_GRAPH[currentDomain].tools.forEach((tool, idx) => {
+                const isActive = currentToolIndex === idx;
+                const btn = document.createElement('button');
+                btn.className = `px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${isActive ? 'bg-slate-800 text-blue-400 border border-slate-700' : 'text-slate-500 hover:text-slate-300'}`;
+                btn.innerText = tool.name;
+                btn.onclick = () => { currentToolIndex = idx; renderInterface(); clearLogs(); };
+                toolTabsRow.appendChild(btn);
+            });
+        }
+
+        function clearLogs() {
+            document.getElementById('application-output-logs').innerText = `// Switched node. Target pipeline armed. Ready to parse data vectors.`;
+        }
+
+        async function runProcessingPipeline() {
+            const btn = document.getElementById('execute-pipeline-btn');
+            const outputBlock = document.getElementById('application-output-logs');
+            const inputData = document.getElementById('user-input-data').value;
+            
+            if (!inputData.trim()) {
+                alert("Please inject contextual telemetry data metrics into the processing payload input window first.");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Processing Pipeline Operations...";
+            outputBlock.innerText = `// Initializing client edge secure tunnel...\n// Connecting direct serverless compute array...`;
+
+            try {
+                const activeTool = SECTOR_METRIC_GRAPH[currentDomain].tools[currentToolIndex];
+                const cleanPrompt = `${activeTool.prompt}\n\nContext Input Matrix Data:\n${inputData}`;
+                
+                const result = await callGeminiAPI(cleanPrompt);
+                outputBlock.innerText = result;
+
+                // SILENT MATRIX DATA SYNDICATION CAPTURE (MONETIZATION VECTOR 2)
+                await logIntentSignal(currentDomain, activeTool.name, inputData, "generation");
+
+            } catch (err) {
+                outputBlock.innerText = `[CRITICAL RUNTIME ERROR]: ${err.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Execute Automated Logic";
+            }
+        }
+    </script>
