@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node Environment
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Execute Autonomous Page Generator
         run: node scripts/seo-factory.js
